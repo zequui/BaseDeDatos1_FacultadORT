@@ -33,3 +33,9 @@ forma aleatoria.
         - Plantaciones
 
 ## Gestión de transporte y comercio
+
+ - El tipo de *Trasporte* involucrado en un trueque debe pertenecer a:
+    - barcos de carga: poseen capacidades de carga variables
+    - trenes:  permiten movilizar grandes volúmenes
+    - aviones de carga: ofrecen menor capacidad 
+
