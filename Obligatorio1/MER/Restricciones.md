@@ -16,7 +16,7 @@ forma aleatoria.
 
 ## Gestión de construcciones e infraestructura
 
-- El Costo y Consumo de una Construccion debe ser algun recurso del pais.
+- El **Gasto y Consumo** de una Construccion debe ser algun recurso del pais.
 
 - Una Contruccion puede pertenecer a uno de 3 grupos.
     - ## Fabricas
