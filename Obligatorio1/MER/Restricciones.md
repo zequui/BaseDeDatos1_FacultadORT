@@ -48,10 +48,13 @@
     - **barcos de carga:** poseen capacidades de carga variables
     - **trenes:** permiten movilizar grandes volúmenes
     - **aviones de carga:** ofrecen menor capacidad 
+- En cada truque se debe seleccionar un **Pais** *Responsable*
+- La cantidad de **Recursos** del **pais** *incluida* en el **Truque** debe ser posible(NO ser mas de los recursos que tiene y poder trasladar esa cantidad con la capacidad fijada) 
 
 ## Gestion de Consumo
 - CantXRonda de los recursos de tipo alimento y energia se ve proporcionalmente afectado por la cantidad de construcciones de tipo "manzanas de ciudad".
-- Si un Pais NO cumple con su consumo de alimentos y energias en 10 Rondas, se agrega una Obvservacion al Pais.
-- Si una Pais tiene mas de 2 obvservaciones seguidas Pierde.
+- Si un **Pais** NO cumple con su consumo de alimentos y energias en 10 Rondas, se agrega una Obvservacion al **Pais**.
+- Si una **Pais** tiene mas de 2 *obvservaciones* :, *Perdio* su atributo que se le asigna al unirse, lo marcara como que ha perdido y no podra seguir jugando.
+- *ConsumoManzanas* inidica la cantidad de recursos que debe consumir cada pais cada 10 rondas.
 
 ## Gestion De Logros
