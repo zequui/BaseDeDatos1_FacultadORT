@@ -55,7 +55,8 @@
 ## Gestión de consumo
 - *CantXRonda* de los recursos de tipo alimentos y energía se ve proporcionalmente afectado por la cantidad de construcciones de tipo "manzanas de ciudad". La proporción *consumoManzana* se define cuando un jugador crea una partida.
 - Si un **país** no cumple con su consumo de alimentos y energías en 10 rondas, se agrega una **observación** al **país**.
-- Si un **país** acumula más de 2 **observaciones**, se considera que ha perdido la partida y no podrá seguir jugando.
+- Si tras transcurrir 10 rondas se saldaron todas las *deudas* de un **pais** las *observaciones* se reinician a 0.
+- Si un **país** acumula más de 2 **observaciones** , se considera que ha perdido la partida y no podrá seguir jugando.
 
 ## Gestión de logros
 - Los **logros** se desbloquean al cumplir hitos predefinidos.
