@@ -1,5 +1,5 @@
 
-**Empresa** (Rut, RazonSocial, Calle, Nro, Ciudad, Departamento, CP, FechaRegistro)
+**Empresa** (Rut, `RazonSocial`, Calle, Nro, Ciudad, Departamento, CP, FechaRegistro)
 - Pk: Rut
 - Ak: RazonSocial
 
