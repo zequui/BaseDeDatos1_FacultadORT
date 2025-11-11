@@ -47,18 +47,22 @@ HAVING COUNT(DISTINCT C.TipoConstruccion) = 1;
 -- últimos 3 meses y con la mayor configuración de consumo. Considerar aquellos jugadores que
 -- participaron con el rol de invitado.
 
-select j.alias, j.nombrejugador
-from jugador j, paispartidajugador p, partida pa
-where j.alias = p.alias
-and pa.idpartida = p.idpartida
-and p.rol = 'INVITADO'
-and pa.fecha >= DATEADD(MONTH, -3, GETDATE()
-and pa.configuracionconsumo  = (SELECT MAX(pa2.configuracionconsumo)
-                                FROM partida pa2
-                                JOIN paispartidajugador p2 ON pa2.idpartida = p2.idpartida
-                                WHERE p2.rol = 'INVITADO'
-                                AND pa2.fecha >= DATEADD(MONTH, -3, GETDATE()));
-                                
+-- ! NOTA: ASUMI QUE LA FECHA ACTUAL ES 05-NOV-25 PARA PODER CALCULAR LOS ULTIMOS 3 MESES YA QUE LA IMPLEMENTACION ANTERIOR NO FUNCIONABA
+-- ! QUIZA PODEMOS CAMBIAR COMO USAMOS LA FECHA, EN EL LAB LO MENCIONO
+
+SELECT J.ALIAS, J.NOMBREJUGADOR
+FROM   JUGADOR J
+JOIN   PAISPARTIDAJUGADOR PPJ ON J.ALIAS = PPJ.ALIAS
+JOIN   PARTIDA P ON P.IDPARTIDA = PPJ.IDPARTIDA AND P.IDPAIS = PPJ.IDPAIS
+WHERE  PPJ.ROL = 'INVITADO'
+  AND  P.FECHACREACION >= '05-SEP-25'
+  AND  P.CONFIGURACIONCONSUMO IN (
+           SELECT MAX(CONFIGURACIONCONSUMO)
+           FROM   PARTIDA
+           WHERE  FECHACREACION >= '05-SEP-25' -- TOMANDO LA PARTIDA MAS RECIENTE = 05-NOV-25
+       );
+    
+   
 -- 4) Obtener el alias de los jugadores cuyos países hayan intercambiado la menor cantidad del
 -- recurso hierro en un trueque. Considerar los alias de los jugadores que participan en el trueque
 -- únicamente como jugador A.
@@ -82,6 +86,31 @@ AND t.cantidadrecursoa = (
 -- de tipo “CONSTRUCCIÓN”. Considerar únicamente las construcciones cuyo tipo de operación
 -- es “CONSUME” y las partidas con una configuración de consumo que supere las 1.000
 -- unidades.
+
+ -- ! CHICOS SE QUE SE VE RARO PERO LO DIMOS EL VIERNES 7 EN EL LAB POR SI QUIEREN VER LA LOGICA ESTA AL FINAL EN EL EJ16
+
+SELECT J.ALIAS, J.NOMBREJUGADOR
+FROM JUGADOR J
+WHERE NOT EXISTS (
+           SELECT 1
+           FROM   RECURSO R
+           WHERE  R.TIPORECURSO = 'CONSTRUCCION'
+           AND NOT EXISTS (
+                      SELECT 1
+                      FROM CONSTRUCCION C
+                      JOIN PARTIDA P ON P.IDPARTIDA = C.IDPARTIDA 
+                       AND P.IDPAIS = C.IDPAIS
+                      JOIN PAISPARTIDAJUGADOR PPJ ON PPJ.IDPARTIDA = C.IDPARTIDA 
+                        AND PPJ.IDPAIS = C.IDPAIS 
+                        AND PPJ.ALIAS = C.ALIAS
+                      WHERE  C.IDRECURSO = R.IDRECURSO
+                        AND  C.TIPOOPERACION = 'CONSUME'
+                        AND  P.CONFIGURACIONCONSUMO > 1000
+                        AND  PPJ.ALIAS = J.ALIAS
+                  )
+       );              
+                    
+
 
 -- 6) Obtener el nombre y tipo de recurso que se utilizó la mayor cantidad de veces en construcciones.
 -- Considerar solamente aquellas construcciones de partidas creadas en los últimos 30 días y que
