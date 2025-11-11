@@ -21,6 +21,18 @@ HAVING COUNT(DISTINCT C.TipoConstruccion) = 1;
 -- últimos 3 meses y con la mayor configuración de consumo. Considerar aquellos jugadores que
 -- participaron con el rol de invitado.
 
+select j.alias, j.nombrejugador
+from jugador j, paispartidajugador p, partida pa
+where j.alias = p.alias
+and pa.idpartida = p.idpartida
+and p.rol = 'INVITADO'
+and pa.fecha >= DATEADD(MONTH, -3, GETDATE()
+and pa.configuracionconsumo  = (SELECT MAX(pa2.configuracionconsumo)
+                                FROM partida pa2
+                                JOIN paispartidajugador p2 ON pa2.idpartida = p2.idpartida
+                                WHERE p2.rol = 'INVITADO'
+                                AND pa2.fecha >= DATEADD(MONTH, -3, GETDATE()));
+                                
 -- 4) Obtener el alias de los jugadores cuyos países hayan intercambiado la menor cantidad del
 -- recurso hierro en un trueque. Considerar los alias de los jugadores que participan en el trueque
 -- únicamente como jugador A.
