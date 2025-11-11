@@ -63,6 +63,21 @@ and pa.configuracionconsumo  = (SELECT MAX(pa2.configuracionconsumo)
 -- recurso hierro en un trueque. Considerar los alias de los jugadores que participan en el trueque
 -- únicamente como jugador A.
 
+SELECT DISTINCT p.alias
+FROM PAISPARTIDAJUGADOR P
+INNER JOIN TRUEQUE t ON t.jugadora = p.alias
+INNER JOIN RECURSO r ON t.idrecursoa = r.idrecurso
+WHERE UPPER(r.nombre) = 'HIERRO'
+AND t.cantidadrecursoa = (
+    SELECT MIN(t2.cantidadrecursoa)
+    FROM TRUEQUE t2
+    WHERE t2.idrecursoa IN (
+        Select r2.idrecurso
+        FROM RECURSO r2
+        WHERE UPPER(r2.nombre) = 'HIERRO'
+    )
+);
+
 -- 5) Obtener el alias y nombre de jugadores cuyos países hayan consumido de todos los recursos
 -- de tipo “CONSTRUCCIÓN”. Considerar únicamente las construcciones cuyo tipo de operación
 -- es “CONSUME” y las partidas con una configuración de consumo que supere las 1.000
