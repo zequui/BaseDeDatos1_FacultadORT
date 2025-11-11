@@ -13,7 +13,19 @@ HAVING COUNT(DISTINCT C.TipoConstruccion) = 1;
 
 -- 2) Obtener el id de la partida, el nombre del país, la fecha de creación de la partida y el Alias de
 -- los jugadores que no hayan realizado trueques de recursos del tipo producto básico nacional (PBN).
-
+ -- ! MAL IMPLEMENTADO, RETORNA LOS QUE SI REALIZARON TRUEQUES DE PBN
+    SELECT pa.IdPartida, p.NombrePais, pa.FechaCreacion, j.Alias
+    FROM partida pa
+    INNER JOIN pais p ON pa.IdPais = p.IdPais
+    INNER JOIN paisPartidaJugador j ON pa.IdPartida = j.IdPartida AND pa.IdPais = j.IdPais
+    INNER JOIN trueque t ON (
+        (t.IdPartidaA = pa.IdPartida AND t.JugadorA = j.Alias)
+        OR
+        (t.IdPartidaB = pa.IdPartida AND t.JugadorB = j.Alias)
+    )
+    INNER JOIN recurso rA ON t.IdRecursoA = rA.IdRecurso
+    INNER JOIN recurso rB ON t.IdRecursoB = rB.IdRecurso
+    WHERE (rA.TipoRecurso = 'PBN' OR rB.TipoRecurso = 'PBN') 
 
 
 
