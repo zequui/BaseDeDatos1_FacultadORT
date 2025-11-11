@@ -275,3 +275,32 @@ INSERT INTO trueque VALUES (
   5000,20,'beto',101,
   2, 1
 );
+
+-- !Casos para el ejercicio2 
+
+-- Jugadores
+INSERT INTO jugador VALUES ('ana', 'Ana Torres', 'ana@email.com', TO_DATE('01/11/2025','DD/MM/YYYY'));
+INSERT INTO jugador VALUES ('beto', 'Beto Silva', 'beto@email.com', TO_DATE('02/11/2025','DD/MM/YYYY'));
+
+-- Países
+INSERT INTO pais VALUES (10, 'Chile');
+INSERT INTO pais VALUES (20, 'Perú');
+
+-- Partidas (misma IdPartida para ambos países, porque la PK es compuesta)
+INSERT INTO partida VALUES (5000, 10, TO_DATE('03/11/2025','DD/MM/YYYY'), 50);
+INSERT INTO partida VALUES (5000, 20, TO_DATE('03/11/2025','DD/MM/YYYY'), 50);
+
+-- Relación país-partida-jugador
+INSERT INTO paisPartidaJugador VALUES (5000, 10, 'ana', 'ANFITRION');
+INSERT INTO paisPartidaJugador VALUES (5000, 20, 'beto', 'INVITADO');
+
+-- Recursos
+INSERT INTO recurso VALUES (101, 'Madera', 'CONSTRUCCION');
+INSERT INTO recurso VALUES (301, 'Comida', 'CONSUMO');
+
+-- Inventario de recursos (para cumplir FK en TRUEQUE)
+INSERT INTO inventarioRecurso VALUES (5000, 10, 'ana', 101, 100);
+INSERT INTO inventarioRecurso VALUES (5000, 20, 'beto', 301, 50);
+
+-- Finalmente, el trueque
+INSERT INTO TRUEQUE VALUES (900005, 5000, 10, 'ana', 101, 5000, 20, 'beto', 301, 2, 1);
