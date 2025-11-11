@@ -2,15 +2,20 @@
 -- Considerar aquellas construcciones donde únicamente se utilizaron recursos del tipo construcción.
 
 SELECT P.NombrePais, P.IdPais
-FROM PAIS P
-INNER JOIN CONSTRUCCION C ON C.IdPais = P.IdPais
-WHERE C.TipoConstruccion IN ('PUERTO', 'ASTILLERO')
-AND C.IdRecurso IN ( 
-    SELECT IdRecurso FROM recurso WHERE TipoRecurso = 'CONSTRUCCION'
-)
+FROM pais P
+INNER JOIN construccion C ON P.IdPais = C.IdPais
+INNER JOIN recurso R ON C.IdRecurso = R.IdRecurso
+WHERE R.TipoRecurso = 'CONSTRUCCION'
+AND C.TipoConstruccion IN ('PUERTO', 'ASTILLERO')
+GROUP BY P.NombrePais, P.IdPais
+HAVING COUNT(DISTINCT C.TipoConstruccion) = 1;
+
 
 -- 2) Obtener el id de la partida, el nombre del país, la fecha de creación de la partida y el Alias de
 -- los jugadores que no hayan realizado trueques de recursos del tipo producto básico nacional (PBN).
+
+
+
 
 -- 3) Obtener el nombre y alias de los jugadores que hayan participado en partidas creadas en los
 -- últimos 3 meses y con la mayor configuración de consumo. Considerar aquellos jugadores que
