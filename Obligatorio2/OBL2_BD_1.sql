@@ -116,6 +116,36 @@ WHERE NOT EXISTS (
 -- Considerar solamente aquellas construcciones de partidas creadas en los últimos 30 días y que
 -- dichas partidas no hayan tenido ningún trueque.
 
+-- ! ES LA UNICA SOLUCION QUE SE ME OCURRIO SI ENCUENTRAN UNA MAS OPTIMIZADA IMPLEMENTENLA
+-- * ESTA CONSULTA NO ESTA PROBADA, AGREGUEN CASOS PARA PROBARLA (NO SE OLIVIDEN DE AGREGAR LAS INSERSIONES AL DML)
+SELECT r.Nombre, r.TipoRecurso
+FROM recurso r
+JOIN construccion c ON r.IdRecurso = c.IdRecurso
+JOIN partida p ON c.IdPartida = p.IdPartida AND c.IdPais = p.IdPais
+WHERE p.FechaCreacion >= '05-OCT-2025'
+AND p.IdPartida NOT IN (
+    SELECT IdPartidaA FROM trueque
+    UNION
+    SELECT IdPartidaB FROM trueque
+)
+GROUP BY r.Nombre, r.TipoRecurso
+HAVING COUNT(*) = (
+    SELECT MAX(Cantidad)
+    FROM (
+        SELECT COUNT(*) AS Cantidad
+        FROM construccion c2
+        JOIN partida p2 ON c2.IdPartida = p2.IdPartida AND c2.IdPais = p2.IdPais
+        WHERE p2.FechaCreacion >= '05-OCT-2025'
+        AND p2.IdPartida NOT IN (
+            SELECT IdPartidaA FROM trueque
+            UNION
+            SELECT IdPartidaB FROM trueque
+        )
+        GROUP BY c2.IdRecurso
+    )
+);
+
+
 -- 7) Listar para cada partida, el nombre de los países con el menor stock acumulado de recursos de
 -- tipo “CONSTRUCCIÓN”. Considerar solamente las partidas que hayan realizado algún trueque
 -- en los que participó el país “Uruguay”, “Brasil” o “Argentina”.
