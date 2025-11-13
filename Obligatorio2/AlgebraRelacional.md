@@ -40,3 +40,15 @@ $$
 $$
 
 # Ejercicio 4
+$$
+\Pi_{IdRecurso}\;\big(\sigma_{TipoRecurso = 'hierro'}(Recurso)​\big) \rightarrow RecId \\
+\rho_{(Jugador := JugadorA,\; cantRec := CantidadRecursoA)}\;\Pi_{JugadorA,CantidadRecursoA}\;\big(IdRecursoA​ \bowtie RecID \big) \rightarrow AliasA \\
+\rho_{(Jugador := JugadorA,\; cantRec := CantidadRecursoA)}\;\Pi_{JugadorB,CantidadRecursoB}\;\big(IdRecursoA​ \bowtie RecID \big) \rightarrow AliasB \\
+\Pi_{Jugador,cantRec}\;(AliasA) \cup \Pi_{Jugador,cantRec}\;(AliasB) \rightarrow AliYRec \\
+\Pi_{Jugador,cantRec}\;(AliYRec) \times \Pi_{Jugador,cantRec}\;(\rho_{T2}(AliYRec)) \rightarrow RecXRec \\
+\Pi * \big(\sigma_{¥3 > ¥4}(RecXRec)) \rightarrow mayores \\
+\Pi_{¥3} \big(mayores) \rightarrow NoMin \\
+\Pi_{cantRec}\;\big(AliYRec\big) \rightarrow Todos \\
+\Pi_{cantRec}\;\big(Todos - NoMin\big) \rightarrow min \\
+\Pi_{Jugador}\;\big(AliYRec \bowtie min \big)
+$$
