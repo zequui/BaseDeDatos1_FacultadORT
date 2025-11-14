@@ -1,7 +1,7 @@
 
 # Ejercicio 1
 $$
-RecId \leftarrow \Pi_{IdRecurso}\;\big(\sigma_{TipoRecurso \neq 'Construccion'}(Recurso)​\big) \\
+RecId \leftarrow \Pi_{IdRecurso}\;\big(\sigma_{TipoRecurso ='Construccion'}(Recurso)​\big) \\
 ConsId \leftarrow \Pi_{IdPais,TipoConstruccion}\;\big(Construccion \bowtie RecID​\big) \\
 PaisId \leftarrow \Pi_{IdPais}\;\big(\sigma_{TipoConstruccion = 'Puerto'}(ConsId)​\big) \\
 PaisId2 \leftarrow \Pi_{IdPais}\;\big(\sigma_{TipoConstruccion = 'Astillero'}(consId)​\big) \\
