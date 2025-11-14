@@ -1,8 +1,4 @@
 
-<!-- * Cosas que necesito para el markdown
-* \Pi_{nombre, puntaje}(Jugadores) \\
-* \Pi \sigma \neq \rightarrow \bowtie \cup \big( \big) \times\\
--->
 # Ejercicio 1
 $$
 RecId \leftarrow \Pi_{IdRecurso}\;\big(\sigma_{TipoRecurso \neq 'Construccion'}(Recurso)​\big) \\
@@ -14,7 +10,6 @@ Astilleros \leftarrow \Pi*(PaisId2) - \Pi*(PaisId) \\
 \Pi*\;\big(Pais \bowtie (Puertos \cup Astilleros)​\big) \\
 $$
 # Ejercicio 2
-<!-- TODO: Preguntar a la profe si estan bien los renombramientos, los joins y seleccion -->
 $$
 RecPBN \leftarrow \Pi_{IdRecurso}(\sigma_{TipoRecurso \neq 'PBN'}(Recurso)) \\
 ConsId \leftarrow \Pi_{IdPartidaA,IdPaisA,JugadorA,IdRecursoA,IdPaisB,JugadorB,IdRecursoB}\;\big(\;(Trueque \bowtie_{Trueque.IdRecursoA = RecPBN.IdRecurso} RecPBN​)\big) \\
