@@ -105,7 +105,8 @@ WHERE NOT EXISTS (
                         AND PPJ.ALIAS = C.ALIAS
                       WHERE  C.IDRECURSO = R.IDRECURSO
                         AND  C.TIPOOPERACION = 'CONSUME'
-                        AND  P.CONFIGURACIONCONSUMO > 1000
+                        AND  P.
+                         > 1000
                         AND  PPJ.ALIAS = J.ALIAS
                   )
        );              
@@ -115,6 +116,8 @@ WHERE NOT EXISTS (
 -- 6) Obtener el nombre y tipo de recurso que se utilizó la mayor cantidad de veces en construcciones.
 -- Considerar solamente aquellas construcciones de partidas creadas en los últimos 30 días y que
 -- dichas partidas no hayan tenido ningún trueque.
+
+-- ? Para fechas BETWEEN (SYSDATE - INTERVAL '3') MONTH AND SYSDATE 
 
 -- ! ES LA UNICA SOLUCION QUE SE ME OCURRIO SI ENCUENTRAN UNA MAS OPTIMIZADA IMPLEMENTENLA
 -- * ESTA CONSULTA NO ESTA PROBADA, AGREGUEN CASOS PARA PROBARLA (NO SE OLIVIDEN DE AGREGAR LAS INSERSIONES AL DML)
@@ -129,19 +132,15 @@ AND p.IdPartida NOT IN (
     SELECT IdPartidaB FROM trueque
 )
 GROUP BY r.Nombre, r.TipoRecurso
-HAVING COUNT(*) = (
-    SELECT MAX(Cantidad)
-    FROM (
-        SELECT COUNT(*) AS Cantidad
-        FROM construccion c2
-        JOIN partida p2 ON c2.IdPartida = p2.IdPartida AND c2.IdPais = p2.IdPais
-        WHERE p2.FechaCreacion >= '05-OCT-2025'
-        AND p2.IdPartida NOT IN (
+HAVING COUNT(*) >= ALL(
+    SELECT COUNT(Cantidad)
+    FROM construccion c2
+    JOIN partida p2 ON c2.IdPartida = p2.IdPartida AND c2.IdPais = p2.IdPais
+    WHERE p2.FechaCreacion >= '05-OCT-2025'
+    AND p2.IdPartida NOT IN(
             SELECT IdPartidaA FROM trueque
             UNION
             SELECT IdPartidaB FROM trueque
-        )
-        GROUP BY c2.IdRecurso
     )
 );
 
@@ -150,10 +149,82 @@ HAVING COUNT(*) = (
 -- tipo “CONSTRUCCIÓN”. Considerar solamente las partidas que hayan realizado algún trueque
 -- en los que participó el país “Uruguay”, “Brasil” o “Argentina”.
 
+-- ! Falta comprobar casos
+
+SELECT ppj.idpartida AS Partida, p.NombrePais AS Pais
+FROM PAISPARTIDAJUGADOR ppj
+INNER JOIN Pais p 
+    ON p.idpais = ppj.idpais
+INNER JOIN construccion c 
+    ON c.idpartida = ppj.idpartida 
+    AND c.idpais = ppj.idpais
+INNER JOIN inventariorecurso ir ON ppj.idpartida = ir.idpartida 
+    AND ppj.idpais = ir.idpais
+WHERE c.TipoConstruccion = 'CONSTRUCCIÓN'
+AND EXISTS(
+    SELECT 1
+    FROM TRUEQUE t
+    INNER JOIN Pais pA 
+        ON t.idPaisA = pA.idPais
+    INNER JOIN Pais pB 
+        ON t.idPaisB = pB.idPais
+    WHERE (t.idpartidaA = ppj.idpartida 
+        OR t.idpartidaB = ppj.idpartida)
+    AND (pA.nombrepais IN ('Uruguay','Brasil','Argentina')
+        OR pB.nombrepais IN('Uruguay','Brasil','Argentina'))
+)
+AND ir.STOKCACUMULADO = (
+    SELECT MIN(ir2.STOCKACUMULADO)
+    FROM inventariorecurso ir2
+    WHERE ir2.idpartida = ppj.idpartida
+);
+
 -- 8) Obtener el nombre de los países que son autosuficientes. Un país se considera autosuficiente
 -- en una partida si el total de recursos de tipo “CONSUMO” que producen es mayor que el total
 -- de recursos del mismo tipo que consumen. Considerar solo las partidas que aún no han tenido
 -- ningún trueque. Mostrar el nombre del país y el id de la partida en la que cumpla esta condición.
+
+-- ! Falta comprobar casos
+
+SELECT p.nombrepais AS Pais,ir.idpartida as Partida
+FROM PAIS p
+INNER JOIN inventarioRecurso ir 
+    ON ir.idPais = p.idpais
+INNER JOIN PARTIDA pa 
+    ON ir.idpartida = pa.idpartida
+INNER JOIN RECURSO r 
+    ON r.idrecurso = ir.idrecurso
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM TRUEQUE t
+    WHERE (t.idpartidaA = ir.idpartida
+        OR t.idpartidaB = ir.idpartida
+    )
+)
+GROUP BY p.nombrepais,ir.idpartida,ir.idpais
+HAVING 
+    (
+        SELECT SUM(c2.cantidadrecurso)
+        FROM CONSTRUCCION c2
+        INNER JOIN RECURSO r2 ON c2.idrecurso = r2.idrecurso
+        WHERE c2.idpais = ir.idpais
+        AND c2.idpartida = ir.idpartida
+        AND r2.TipoRecurso = 'CONSUMO'
+        AND c2.TipoOperacion = 'PRODUCE'
+    )
+    
+    > 
+    
+    (
+        SELECT SUM(c3.cantidadrecurso)
+        FROM CONSTRUCCION c3
+        INNER JOIN RECURSO r3 ON c3.idrecurso = r3.idrecurso
+        WHERE c3.idpais = ir.idpais
+        AND c3.idpartida = ir.idpartida
+        AND r3.TipoRecurso = 'CONSUMO'
+        AND c3.TipoOperacion = 'CONSUME'
+    )
+;
 
 -- 9) Obtener la partida, el país, el alias, el nombre de los jugadores y el rol, que participaron en
 -- partidas creadas en el año 2025.
