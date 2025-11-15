@@ -11,9 +11,10 @@ Astilleros \leftarrow \Pi*(PaisId2) - \Pi*(PaisId) \\
 $$
 # Ejercicio 2
 $$
-RecPBN \leftarrow \Pi_{IdRecurso}(\sigma_{TipoRecurso \neq 'PBN'}(Recurso)) \\
-ConsId \leftarrow \Pi_{IdPartidaA,IdPaisA,JugadorA,IdRecursoA,IdPaisB,JugadorB,IdRecursoB}\;\big(\;(Trueque \bowtie_{Trueque.IdRecursoA = RecPBN.IdRecurso} RecPBN​)\big) \\
-TruDatos \leftarrow \Pi_{IdPartidaA,IdPaisA,JugadorA,IdRecursoA,IdPaisB,JugadorB,IdRecursoB}\;\big(\;(ConsId \bowtie_{Trueque.IdRecursoB = RecPBN.IdRecurso} RecPBN​)\big) \\
+RecPBN \leftarrow \Pi_{IdRecurso}(\sigma_{TipoRecurso = 'PBN'}(Recurso)) \\
+ConsId1 \leftarrow \Pi_{JugadorA}\;\big(\;(Trueque \bowtie_{Trueque.IdRecursoA = RecPBN.IdRecurso} RecPBN​)\big) \\
+ConsId2 \leftarrow \Pi_{JugadorB}\;\big(\;(Trueque \bowtie_{Trueque.IdRecursoB = RecPBN.IdRecurso} RecPBN​)\big) \\
+TruDatos \leftarrow \Pi_{IdPartidaA,IdPaisA,JugadorA,IdPaisB,JugadorB}\;\big(\;Truque - (ConsId1 \cup ConsId2)\big) \\
 NomPaisA \leftarrow (IdPartida, NombrePais, IdJugador)\Big( \Pi_{IdPartidaA,IdPaisA,JugadorA}\big(Pais \bowtie_{Pais.idPais = TruDatos.idPaisA} TruDatos\big)\Big) \\
 NomPaisB \leftarrow (IdPartida, NombrePais, IdJugador)\Big( \Pi_{IdPartidaB,IdPaisB,JugadorB}\big(Pais \bowtie_{Pais.idPais = TruDatos.idPaisB} TruDatos\big)\Big) \\
 Out \leftarrow NomPaisA \cup NomPaisB ​\\
