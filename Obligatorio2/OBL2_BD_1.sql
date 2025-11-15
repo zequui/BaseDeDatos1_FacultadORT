@@ -149,36 +149,35 @@ HAVING COUNT(*) >= ALL(
 -- tipo “CONSTRUCCIÓN”. Considerar solamente las partidas que hayan realizado algún trueque
 -- en los que participó el país “Uruguay”, “Brasil” o “Argentina”.
 
--- ! Falta comprobar casos
-
-SELECT ppj.idpartida AS Partida, p.NombrePais AS Pais
-FROM PAISPARTIDAJUGADOR ppj
-INNER JOIN Pais p 
-    ON p.idpais = ppj.idpais
-INNER JOIN construccion c 
-    ON c.idpartida = ppj.idpartida 
-    AND c.idpais = ppj.idpais
-INNER JOIN inventariorecurso ir ON ppj.idpartida = ir.idpartida 
-    AND ppj.idpais = ir.idpais
-WHERE c.TipoConstruccion = 'CONSTRUCCIÓN'
-AND EXISTS(
-    SELECT 1
-    FROM TRUEQUE t
-    INNER JOIN Pais pA 
-        ON t.idPaisA = pA.idPais
-    INNER JOIN Pais pB 
-        ON t.idPaisB = pB.idPais
-    WHERE (t.idpartidaA = ppj.idpartida 
-        OR t.idpartidaB = ppj.idpartida)
-    AND (pA.nombrepais IN ('Uruguay','Brasil','Argentina')
-        OR pB.nombrepais IN('Uruguay','Brasil','Argentina'))
-)
-AND ir.STOKCACUMULADO = (
-    SELECT MIN(ir2.STOCKACUMULADO)
-    FROM inventariorecurso ir2
-    WHERE ir2.idpartida = ppj.idpartida
-);
-
+    SELECT ppj.idpartida AS Partida, p.NombrePais AS Pais
+    FROM PAISPARTIDAJUGADOR ppj
+    INNER JOIN Pais p ON p.idpais = ppj.idpais
+    INNER JOIN inventariorecurso ir ON ppj.idpartida = ir.idpartida AND ppj.idpais = ir.idpais
+    INNER JOIN recurso r ON ir.idrecurso = r.idrecurso
+    WHERE r.TipoRecurso = 'CONSTRUCCION'
+    AND EXISTS (
+        SELECT 1
+        FROM TRUEQUE t
+        INNER JOIN Pais pA ON t.idPaisA = pA.idPais
+        INNER JOIN Pais pB ON t.idPaisB = pB.idPais
+        WHERE (t.idpartidaA = ppj.idpartida OR t.idpartidaB = ppj.idpartida)
+        AND (pA.nombrepais IN ('Uruguay','Brasil','Argentina')
+            OR pB.nombrepais IN ('Uruguay','Brasil','Argentina'))
+    )
+    GROUP BY ppj.idpartida, p.NombrePais
+    HAVING SUM(ir.STOCKACUMULADO) = (
+        SELECT MIN(TotalStock)
+        FROM (
+            SELECT ppj2.idpais, SUM(ir2.STOCKACUMULADO) AS TotalStock
+            FROM PAISPARTIDAJUGADOR ppj2
+            INNER JOIN inventariorecurso ir2 ON ppj2.idpartida = ir2.idpartida AND ppj2.idpais = ir2.idpais
+            INNER JOIN recurso r2 ON ir2.idrecurso = r2.idrecurso
+            WHERE r2.TipoRecurso = 'CONSTRUCCION'
+            AND ppj2.idpartida = ppj.idpartida
+            GROUP BY ppj2.idpais
+        )
+    );
+    
 -- 8) Obtener el nombre de los países que son autosuficientes. Un país se considera autosuficiente
 -- en una partida si el total de recursos de tipo “CONSUMO” que producen es mayor que el total
 -- de recursos del mismo tipo que consumen. Considerar solo las partidas que aún no han tenido
