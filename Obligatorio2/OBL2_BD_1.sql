@@ -118,9 +118,6 @@ WHERE NOT EXISTS (
 -- dichas partidas no hayan tenido ningún trueque.
 
 -- ? Para fechas BETWEEN (SYSDATE - INTERVAL '3') MONTH AND SYSDATE 
-
--- ! ES LA UNICA SOLUCION QUE SE ME OCURRIO SI ENCUENTRAN UNA MAS OPTIMIZADA IMPLEMENTENLA
--- * ESTA CONSULTA NO ESTA PROBADA, AGREGUEN CASOS PARA PROBARLA (NO SE OLIVIDEN DE AGREGAR LAS INSERSIONES AL DML)
 SELECT r.Nombre, r.TipoRecurso
 FROM recurso r
 JOIN construccion c ON r.IdRecurso = c.IdRecurso
@@ -177,13 +174,11 @@ HAVING COUNT(*) >= ALL(
             GROUP BY ppj2.idpais
         )
     );
-    
+
 -- 8) Obtener el nombre de los países que son autosuficientes. Un país se considera autosuficiente
 -- en una partida si el total de recursos de tipo “CONSUMO” que producen es mayor que el total
 -- de recursos del mismo tipo que consumen. Considerar solo las partidas que aún no han tenido
 -- ningún trueque. Mostrar el nombre del país y el id de la partida en la que cumpla esta condición.
-
--- ! Falta comprobar casos
 
 SELECT p.nombrepais AS Pais,ir.idpartida as Partida
 FROM PAIS p
@@ -236,6 +231,34 @@ HAVING
 --          ANFITRIÓN: stock acumulado de los recursos.
 --          SE UNIÓ: cantidad de trueques en los que participó (del lado B del trueque).
 --          INVITADO: la cantidad de construcciones realizadas.
+
+
+SELECT PPJ.alias , PPJ.idpartida, PPJ.idpais , PPJ.rol , j.nombrejugador, CASE PPJ.rol
+    WHEN 'ANFITRION' THEN 'Creador de la partida'
+    WHEN 'INVITADO'  THEN 'Invitado por el anfitrión'
+    WHEN 'SE UNIO'   THEN 'Se unió voluntariamente'
+    ELSE 'Rol desconocido'
+  END AS descripcion_rol
+FROM PAISPARTIDAJUGADOR PPJ
+INNER JOIN JUGADOR J ON j.alias = ppj.alias
+INNER JOIN PARTIDA P ON p.fechacreacion >= '01-JAN-2025' AND p.fechacreacion <= '31-DEC-2025'
+WHERE EXTRACT(YEAR FROM p.fechacreacion) = 2025
+GROUP BY PPJ.alias , PPJ.idpartida, PPJ.idpais , PPJ.rol , j.nombrejugador;
+
+
+
+SELECT u.cantusi,
+    (u.cantusi * 100.0) / t.total AS porcentaje
+FROM (
+    SELECT COUNT(*) AS cantusi
+    FROM construccion
+    WHERE tipoconstruccion = 'USINAS'
+) u,(SELECT COUNT(*) AS total
+    FROM construccion) t;
+
+
+
+
 
 -- 10) Para cada recurso, obtener la cantidad de partidas donde fue utilizado en los últimos 15 días.
 -- Obtener la cantidad de construcciones para las que se utilizó este recurso. Obtener el nombre
