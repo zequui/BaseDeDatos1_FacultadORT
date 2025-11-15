@@ -305,3 +305,73 @@ INSERT INTO TRUEQUE VALUES (900005, 5000, 10, 'ana', 101, 5000, 20, 'beto', 301,
 
 -- ! AGREGACIONES PARA CUMPLIR CON LA CONSULTA DEL EJERCICIO 3
 INSERT INTO PAISPARTIDAJUGADOR VALUES (3000, 40, 'emi', 'INVITADO');
+
+-- ! AGREGACION DE CASOS PARA COMPROBAR EJ 6
+-- Partida reciente SIN trueques (debe contar)
+INSERT INTO partida VALUES (6000, 10, TO_DATE('10/11/2025','DD/MM/YYYY'), 1000);
+INSERT INTO paisPartidaJugador VALUES (6000, 10, 'ana', 'ANFITRION');
+INSERT INTO inventarioRecurso VALUES (6000, 10, 'ana',101,500);
+INSERT INTO inventarioRecurso VALUES (6000, 10, 'ana',102,500);
+INSERT INTO inventarioRecurso VALUES (6000, 10, 'ana',103,500);
+-- Construcciones (Hierro usado 3 veces, Cemento 1 vez)
+INSERT INTO construccion VALUES (6000,10,'ana',101,100,'PUERTO','CONSUME',50);
+INSERT INTO construccion VALUES (6000,10,'ana',101,101,'ASTILLERO','CONSUME',30);
+INSERT INTO construccion VALUES (6000,10,'ana',101,102,'PLANTACION','CONSUME',20);
+INSERT INTO construccion VALUES (6000,10,'ana',102,103,'PUERTO','CONSUME',10);
+
+-- Partida reciente CON trueque (NO debe contar)
+INSERT INTO partida VALUES (7000, 20, TO_DATE('12/11/2025','DD/MM/YYYY'), 900);
+INSERT INTO paisPartidaJugador VALUES (7000, 20, 'beto', 'ANFITRION');
+INSERT INTO inventarioRecurso VALUES (7000, 20, 'beto',101,200);
+INSERT INTO inventarioRecurso VALUES (7000, 20, 'beto',102,200);
+INSERT INTO construccion VALUES (7000,20,'beto',101,200,'PUERTO','CONSUME',10);
+INSERT INTO trueque VALUES (910000,7000,20,'beto',101,7000,20,'beto',102,1,1);
+
+--* Output esperado:
+--* Nombre   | TipoRecurso
+--* Hierro   | CONSTRUCCION
+
+-- ! AGREGACION DE CASOS PARA COMPROBAR EJ 7
+-- Partida con trueque y Uruguay/Brasil
+INSERT INTO partida VALUES (8000,10,TO_DATE('08/11/2025','DD/MM/YYYY'),500);
+INSERT INTO partida VALUES (8000,20,TO_DATE('08/11/2025','DD/MM/YYYY'),500);
+INSERT INTO partida VALUES (8000,30,TO_DATE('08/11/2025','DD/MM/YYYY'),500);
+INSERT INTO paisPartidaJugador VALUES (8000,10,'ana','ANFITRION');
+INSERT INTO paisPartidaJugador VALUES (8000,20,'beto','INVITADO');
+INSERT INTO paisPartidaJugador VALUES (8000,30,'cami','SE UNIO');
+-- Inventarios con distintos stocks de CONSTRUCCION
+INSERT INTO inventarioRecurso VALUES (8000,10,'ana',101,300); -- Uruguay
+INSERT INTO inventarioRecurso VALUES (8000,20,'beto',101,100); -- Brasil
+INSERT INTO inventarioRecurso VALUES (8000,30,'cami',101,200); -- Argentina
+-- Trueque que involucra Uruguay
+INSERT INTO trueque VALUES (920000,8000,10,'ana',101,8000,20,'beto',101,5,5);
+
+
+--* Output esperado:
+--* Partida | Pais
+--* 8000    | Brasil
+
+
+-- ! AGREGACION DE CASOS PARA COMPROBAR EJ 8
+-- Partida sin trueques
+INSERT INTO partida VALUES (9000,40,TO_DATE('09/11/2025','DD/MM/YYYY'),700);
+INSERT INTO paisPartidaJugador VALUES (9000,40,'ana','ANFITRION');
+INSERT INTO inventarioRecurso VALUES (9000,40,'ana',201,500); -- Petroleo (CONSUMO)
+INSERT INTO inventarioRecurso VALUES (9000,40,'ana',202,500); -- Carbon (CONSUMO)
+-- Construcciones: produce 300, consume 100
+INSERT INTO construccion VALUES (9000,40,'ana',201,300,'USINAS','PRODUCE',200);
+INSERT INTO construccion VALUES (9000,40,'ana',202,301,'USINAS','PRODUCE',100);
+INSERT INTO construccion VALUES (9000,40,'ana',201,302,'PUERTO','CONSUME',50);
+INSERT INTO construccion VALUES (9000,40,'ana',202,303,'PUERTO','CONSUME',50);
+
+-- Otro país en misma partida que consume más
+INSERT INTO partida VALUES (9000,50,TO_DATE('09/11/2025','DD/MM/YYYY'),700);
+INSERT INTO paisPartidaJugador VALUES (9000,50,'beto','INVITADO');
+INSERT INTO inventarioRecurso VALUES (9000,50,'beto',201,500);
+INSERT INTO construccion VALUES (9000,50,'beto',201,304,'PUERTO','CONSUME',200);
+INSERT INTO construccion VALUES (9000,50,'beto',201,305,'USINAS','PRODUCE',100);
+
+--* Output esperado:
+--* Pais   | Partida
+--* Chile  | 9000
+
