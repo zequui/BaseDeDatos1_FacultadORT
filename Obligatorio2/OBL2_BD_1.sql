@@ -263,3 +263,36 @@ FROM (
 -- 10) Para cada recurso, obtener la cantidad de partidas donde fue utilizado en los últimos 15 días.
 -- Obtener la cantidad de construcciones para las que se utilizó este recurso. Obtener el nombre
 -- del país que utilizó más veces el recurso y el que menos lo utilizó. 
+
+
+SELECT r.idrecurso, r.nombre, COUNT(DISTINCT ir.idpartida) AS partidas_usadas, COUNT(c.tipoconstruccion) AS contrucciones_usadas,
+
+(
+        SELECT pa.nombrepais
+        FROM PAIS pa
+        JOIN PARTIDA p2 ON p2.idpais = pa.idpais
+        JOIN INVENTARIORECURSO ir2 ON ir2.idpartida = p2.idpartida
+        WHERE ir2.idrecurso = r.idrecurso
+        GROUP BY pa.nombrepais
+        ORDER BY COUNT(*) DESC -- ORDENA DESCENDIENTE  
+        FETCH FIRST 1 ROW ONLY -- FUERZA A SOLO MOSTRAR UNA FILA(LA PRIMERA) LINK: https://blogs.oracle.com/sql/how-to-select-the-top-n-rows-per-group-with-sql-in-oracle-database
+    ) AS pais_mas_usos
+    ,
+
+(
+        SELECT pa.nombrepais
+        FROM PAIS pa
+        JOIN PARTIDA p2 ON p2.idpais = pa.idpais
+        JOIN INVENTARIORECURSO ir2 ON ir2.idpartida = p2.idpartida
+        WHERE ir2.idrecurso = r.idrecurso
+        GROUP BY pa.nombrepais
+        ORDER BY COUNT(*) ASC -- ORDENA ASCENDIENTE  
+        FETCH FIRST 1 ROW ONLY 
+    ) AS pais_menos_usos
+
+FROM RECURSO r
+CROSS JOIN INVENTARIORECURSO ir -- USE CROSS JOIN PARA EVALUAR TODOS LOS RECURSOS INCLUSO SI NO SE USAN
+LEFT JOIN PARTIDA p ON p.idpartida = ir.idpartida 
+LEFT JOIN CONSTRUCCION C ON c.idrecurso = r.idrecurso -- USE LEFT JOIN POR SI NO SE USAN RECURSOS EN LA PARTIDA QUE APAREZCAN IGUAL
+WHERE p.fechacreacion >= '29-OCT-2025'
+GROUP BY r.idrecurso, r.nombre;

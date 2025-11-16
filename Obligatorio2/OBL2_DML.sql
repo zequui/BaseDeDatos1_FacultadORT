@@ -375,3 +375,20 @@ INSERT INTO construccion VALUES (9000,50,'beto',201,305,'USINAS','PRODUCE',100);
 --* Pais   | Partida
 --* Chile  | 9000
 
+-- ! OUTPUT ESPERADO PARA EL EJERCICIO 10 (NO AGREGUE NADA PORQUE LAS ANTERIORES CUBREN TODO) 
+-- ? OUTPUT ESPERADO GENERADO CON IA
+IDRECURSO | NOMBRE       | PARTIDAS_USADAS | CONSTRUCCIONES_USADAS | PAIS_MAS_USOS | PAIS_MENOS_USOS
+-----------------------------------------------------------------------------------------------------
+101       | Hierro       | 5               | 448                   | Brasil        | Chile
+102       | Cemento      | 5               | 256                   | Brasil        | Chile
+103       | Aluminio     | 5               | 64                    | Uruguay       | Chile
+104       | Plastico     | 5               | 96                    | Brasil        | Chile
+105       | Cobre        | 5               | 64                    | Argentina     | Argentina
+106       | Carbono      | 5               | 64                    | Argentina     | Argentina
+201       | Petroleo     | 5               | 128                   | Argentina     | Paraguay
+202       | Carbon       | 5               | 64                    | Argentina     | Argentina
+203       | Alimentos    | 5               | 0                     | Argentina     | Chile
+204       | kW           | 5               | 0                     | Argentina     | Chile
+301       | Agua         | 5               | 0                     | Brasil        | Brasil
+302       | Medicinas    | 5               | 0                     | (NULL)        | (NULL)
+303       | Ropa         | 5               | 0                     | (NULL)        | (NULL)
