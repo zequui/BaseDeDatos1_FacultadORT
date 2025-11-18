@@ -41,3 +41,15 @@ AliasA \leftarrow (Jugador,CantRec)\;\Pi_{JugadorA,CantidadRecursoA}\;\big(Trueq
 MaxCant \leftarrow (\gamma Max(CantRec))(AliasA) \\
 \Pi_{Jugador}\;\big( AliasA \bowtie MaxCant \big)
 $$
+
+
+# Ejercicio 5
+$$
+RecConst \leftarrow \Pi_{idRecurso}\big(\sigma_{TipoRecurso = 'construccion'}(Recurso)​\big) \\
+partiConsumo \leftarrow \Pi_{idPartida}\;\big(\sigma_{configuracionconsumo > 1000}\;(Partida) \big) \\
+ConstConsu \leftarrow \big( \sigma_{tipoOperacion = 'Consume'}(Construccion) \big) \\
+CtPartidaConsu \leftarrow \big(ConstConsu \bowtie partiConsumo \big) \\
+ConstRecConsumo \leftarrow \big( CtPartidaConsu \bowtie RecConst \big) \\
+paisesConsumistas \leftarrow \Pi_{idPais} \big( \big(\Pi_{idPais,idRecurso}\;( ConstRecConsumo)\big)\; \% \;RecConst \big) \\
+\Pi_{Alias,Nombrejugador}\big(Jugador \bowtie (paisesConsumistas \bowtie paispartidajugador)\big) \\
+$$

@@ -273,28 +273,40 @@ HAVING
 --          INVITADO: la cantidad de construcciones realizadas.
 
 
-SELECT PPJ.alias , PPJ.idpartida, PPJ.idpais , PPJ.rol , j.nombrejugador, CASE PPJ.rol
-    WHEN 'ANFITRION' THEN 'Creador de la partida'
-    WHEN 'INVITADO'  THEN 'Invitado por el anfitrión'
-    WHEN 'SE UNIO'   THEN 'Se unió voluntariamente'
-    ELSE 'Rol desconocido'
-  END AS descripcion_rol
+SELECT
+    PPJ.alias,
+    PPJ.idpartida,
+    PPJ.idpais,
+    PPJ.rol,
+    J.nombrejugador,
+    CASE PPJ.rol
+        WHEN 'ANFITRION' THEN 'Creador de la partida' 
+        WHEN 'INVITADO'  THEN 'Invitado por el anfitrión'
+        WHEN 'SE UNIO'   THEN 'Se unió voluntariamente'
+        ELSE 'Rol desconocido'
+    END AS descripcion_rol,
+    u.cantusi,
+    (u.cantusi * 100.0) / t.total AS porcentaje,
+     CASE ppj.rol
+        WHEN 'ANFITRION' THEN (SELECT SUM(IR.stockacumulado)
+                                FROM INVENTARIORECURSO IR
+                                WHERE IR.alias = PPJ.ALIAS
+                                )
+        WHEN 'INVITADO' THEN (t.total)
+        WHEN 'SE UNIO' THEN (
+                    SELECT COUNT(*)
+                    FROM TRUEQUE TR
+                    WHERE TR.jugadorb = PPJ.alias
+                )
+            END AS DATOROL
+
 FROM PAISPARTIDAJUGADOR PPJ
-INNER JOIN JUGADOR J ON j.alias = ppj.alias
-INNER JOIN PARTIDA P ON p.fechacreacion >= '01-JAN-2025' AND p.fechacreacion <= '31-DEC-2025'
-WHERE EXTRACT(YEAR FROM p.fechacreacion) = 2025
-GROUP BY PPJ.alias , PPJ.idpartida, PPJ.idpais , PPJ.rol , j.nombrejugador;
-
-
-
-SELECT u.cantusi,
-    (u.cantusi * 100.0) / t.total AS porcentaje
-FROM (
-    SELECT COUNT(*) AS cantusi
-    FROM construccion
-    WHERE tipoconstruccion = 'USINAS'
-) u,(SELECT COUNT(*) AS total
-    FROM construccion) t;
+INNER JOIN JUGADOR J ON J.alias = PPJ.alias
+INNER JOIN PARTIDA P ON P.idpartida = PPJ.idpartida AND P.idpais = PPJ.idpais
+CROSS JOIN (SELECT COUNT(*) AS cantusi FROM construccion WHERE tipoconstruccion = 'USINAS') u
+CROSS JOIN (SELECT COUNT(*) AS total FROM construccion) t
+WHERE EXTRACT(YEAR FROM P.fechacreacion) = 2025
+GROUP BY PPJ.alias, PPJ.idpartida, PPJ.idpais, PPJ.rol, J.nombrejugador, u.cantusi, t.total;
 
 
 
