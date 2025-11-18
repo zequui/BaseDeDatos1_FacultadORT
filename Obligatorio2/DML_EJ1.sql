@@ -254,3 +254,37 @@ WHERE NOT EXISTS (SELECT 1 FROM construccion WHERE idPartida=91009 AND idPais=90
 --Fresium                                                   906
 --Hesperyx                                                  908
 --Iberiona                                                  909
+
+
+-- ! AGREGACION DE CASOS BASE PARA EJ9 EN BASE A LOS ANTERIORES
+-- === Jugadores adicionales ===
+INSERT INTO jugador VALUES ('p5','Player 5','p5@mail.com',DATE '2025-02-01');
+INSERT INTO jugador VALUES ('p6','Player 6','p6@mail.com',DATE '2025-02-02');
+
+-- === Roles SE UNIÓ ===
+INSERT INTO paisPartidaJugador VALUES (91002,902,'p2','SE UNIO');
+INSERT INTO paisPartidaJugador VALUES (91003,903,'p3','SE UNIO');
+INSERT INTO paisPartidaJugador VALUES (91007,907,'p5','SE UNIO');
+
+-- === Inventarios para estos jugadores ===
+INSERT INTO inventarioRecurso VALUES (91002,902,'p2',9103,50);
+INSERT INTO inventarioRecurso VALUES (91003,903,'p3',9102,40);
+INSERT INTO inventarioRecurso VALUES (91007,907,'p5',9101,30);
+
+-- === Construcciones de tipo USINA ===
+-- Partida 91002 (BoroniaX)
+INSERT INTO construccion VALUES (91002,902,'p1',9103,20001,'USINAS','CONSUME',15);
+INSERT INTO construccion VALUES (91002,902,'p2',9103,20002,'USINAS','CONSUME',10);
+
+-- Partida 91003 (CireniaX)
+INSERT INTO construccion VALUES (91003,903,'p1',9101,20003,'USINAS','CONSUME',20);
+INSERT INTO construccion VALUES (91003,903,'p3',9102,20004,'USINAS','CONSUME',8);
+
+-- Partida 91007 (Gadoria)
+INSERT INTO construccion VALUES (91007,907,'p3',9102,20005,'USINAS','CONSUME',12);
+INSERT INTO construccion VALUES (91007,907,'p5',9101,20006,'USINAS','CONSUME',6);
+
+-- === Trueques para SE UNIÓ (lado B) ===
+INSERT INTO trueque VALUES (30001,91002,902,'p1',9103,91002,902,'p2',9103,10,5);
+INSERT INTO trueque VALUES (30002,91003,903,'p1',9101,91003,903,'p3',9102,15,7);
+INSERT INTO trueque VALUES (30003,91007,907,'p3',9102,91007,907,'p5',9101,8,4);

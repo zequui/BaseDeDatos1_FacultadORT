@@ -1,0 +1,7 @@
+Outputs esperados para cada consulta segun la base de datos:
+
+Consulta 1:
+| NombrePais | IdPais |
+| Argentina  | 1      |
+
+Consulta 2:
