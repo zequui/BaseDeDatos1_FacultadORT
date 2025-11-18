@@ -16,8 +16,8 @@ HAVING COUNT(DISTINCT C.TipoConstruccion) = 1;
 
     SELECT pa.idpartida, p.NombrePais, pa.FechaCreacion, j.Alias
     FROM PARTIDA pa
-    INNER JOIN PAIS p ON pa.idpais = p.idpais
-    INNER JOIN paisPartidaJugador j ON pa.idpartida = j.idpartida
+    INNER JOIN paisPartidaJugador j ON pa.idpartida = j.idpartida 
+    INNER JOIN PAIS p ON pa.idpais = p.idpais AND pa.idpais = j.idpais
     INNER JOIN TRUEQUE t ON (
         (t.idpartidaa = pa.idpartida AND t.Jugadora = j.Alias)
         OR
@@ -31,8 +31,8 @@ HAVING COUNT(DISTINCT C.TipoConstruccion) = 1;
     SELECT pa2.idpartida, p2.nombrepais, pa2.FechaCreacion, j2.Alias
     FROM 
         PARTIDA pa2
-        INNER JOIN PAIS p2 ON pa2.idpais = p2.idpais
         INNER JOIN paisPartidaJugador j2 ON pa2.idpartida = j2.idpartida
+        INNER JOIN PAIS p2 ON pa2.idpais = p2.idpais AND pa2.idpais = j2.idpais
         INNER JOIN TRUEQUE t2 ON (
             (t2.idpartidaa = pa2.idpartida AND t2.Jugadora = j2.Alias)
             OR
@@ -105,7 +105,7 @@ WHERE NOT EXISTS (
                         AND PPJ.ALIAS = C.ALIAS
                       WHERE  C.IDRECURSO = R.IDRECURSO
                         AND  C.TIPOOPERACION = 'CONSUME'
-                        AND  P.
+                        AND  P.ConfiguracionConsumo
                          > 1000
                         AND  PPJ.ALIAS = J.ALIAS
                   )
@@ -130,7 +130,7 @@ AND p.IdPartida NOT IN (
 )
 GROUP BY r.Nombre, r.TipoRecurso
 HAVING COUNT(*) >= ALL(
-    SELECT COUNT(Cantidad)
+    SELECT COUNT(*)
     FROM construccion c2
     JOIN partida p2 ON c2.IdPartida = p2.IdPartida AND c2.IdPais = p2.IdPais
     WHERE p2.FechaCreacion >= '05-OCT-2025'
@@ -139,6 +139,7 @@ HAVING COUNT(*) >= ALL(
             UNION
             SELECT IdPartidaB FROM trueque
     )
+    GROUP BY c2.IdRecurso
 );
 
 
@@ -146,10 +147,9 @@ HAVING COUNT(*) >= ALL(
 -- tipo “CONSTRUCCIÓN”. Considerar solamente las partidas que hayan realizado algún trueque
 -- en los que participó el país “Uruguay”, “Brasil” o “Argentina”.
 
-    SELECT ppj.idpartida AS Partida, p.NombrePais AS Pais
-    FROM PAISPARTIDAJUGADOR ppj
-    INNER JOIN Pais p ON p.idpais = ppj.idpais
-    INNER JOIN inventariorecurso ir ON ppj.idpartida = ir.idpartida AND ppj.idpais = ir.idpais
+    SELECT ir.idpartida AS Partida, p.NombrePais AS Pais
+    FROM inventariorecurso ir
+    INNER JOIN Pais p ON p.idpais = ir.idPais
     INNER JOIN recurso r ON ir.idrecurso = r.idrecurso
     WHERE r.TipoRecurso = 'CONSTRUCCION'
     AND EXISTS (
@@ -157,22 +157,18 @@ HAVING COUNT(*) >= ALL(
         FROM TRUEQUE t
         INNER JOIN Pais pA ON t.idPaisA = pA.idPais
         INNER JOIN Pais pB ON t.idPaisB = pB.idPais
-        WHERE (t.idpartidaA = ppj.idpartida OR t.idpartidaB = ppj.idpartida)
+        WHERE (t.idpartidaA = ir.idpartida OR t.idpartidaB = ir.idpartida)
         AND (pA.nombrepais IN ('Uruguay','Brasil','Argentina')
             OR pB.nombrepais IN ('Uruguay','Brasil','Argentina'))
     )
-    GROUP BY ppj.idpartida, p.NombrePais
-    HAVING SUM(ir.STOCKACUMULADO) = (
-        SELECT MIN(TotalStock)
-        FROM (
-            SELECT ppj2.idpais, SUM(ir2.STOCKACUMULADO) AS TotalStock
-            FROM PAISPARTIDAJUGADOR ppj2
-            INNER JOIN inventariorecurso ir2 ON ppj2.idpartida = ir2.idpartida AND ppj2.idpais = ir2.idpais
-            INNER JOIN recurso r2 ON ir2.idrecurso = r2.idrecurso
-            WHERE r2.TipoRecurso = 'CONSTRUCCION'
-            AND ppj2.idpartida = ppj.idpartida
-            GROUP BY ppj2.idpais
-        )
+    GROUP BY ir.idpartida, p.NombrePais
+    HAVING SUM(ir.STOCKACUMULADO) <= ALL(
+        SELECT SUM(ir2.STOCKACUMULADO)
+        FROM inventariorecurso ir2
+        INNER JOIN recurso r2 ON ir2.idrecurso = r2.idrecurso
+        WHERE ir2.idpartida = ir.idpartida
+        AND r2.TipoRecurso = 'CONSTRUCCION'
+        GROUP BY IR2.idpais
     );
 
 -- 8) Obtener el nombre de los países que son autosuficientes. Un país se considera autosuficiente
