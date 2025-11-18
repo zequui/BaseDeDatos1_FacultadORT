@@ -62,6 +62,18 @@ WHERE  PPJ.ROL = 'INVITADO'
            WHERE  FECHACREACION >= '05-SEP-25' -- TOMANDO LA PARTIDA MAS RECIENTE = 05-NOV-25
        );
     
+--Version del 3) que es dinamica con respecto a la fecha
+SELECT J.ALIAS, J.NOMBREJUGADOR
+FROM   JUGADOR J
+JOIN   PAISPARTIDAJUGADOR PPJ ON J.ALIAS = PPJ.ALIAS
+JOIN   PARTIDA P ON P.IDPARTIDA = PPJ.IDPARTIDA AND P.IDPAIS = PPJ.IDPAIS
+WHERE  PPJ.ROL = 'INVITADO'
+  AND  P.FECHACREACION >= ADD_MONTHS(SYSDATE, -3)
+  AND  P.CONFIGURACIONCONSUMO IN (
+           SELECT MAX(CONFIGURACIONCONSUMO)
+           FROM   PARTIDA
+           WHERE  FECHACREACION >= ADD_MONTHS(SYSDATE, -3)
+       );
    
 -- 4) Obtener el alias de los jugadores cuyos países hayan intercambiado la menor cantidad del
 -- recurso hierro en un trueque. Considerar los alias de los jugadores que participan en el trueque
@@ -139,6 +151,34 @@ HAVING COUNT(*) >= ALL(
             UNION
             SELECT IdPartidaB FROM trueque
     )
+);
+-- version del 6) que es dinamica respecto a la fecha
+SELECT r.Nombre, r.TipoRecurso
+FROM recurso r
+JOIN construccion c 
+    ON r.IdRecurso = c.IdRecurso
+JOIN partida p 
+    ON c.IdPartida = p.IdPartida 
+   AND c.IdPais = p.IdPais
+WHERE p.FechaCreacion >= SYSDATE - 30
+  AND p.IdPartida NOT IN (
+        SELECT IdPartidaA FROM trueque
+        UNION
+        SELECT IdPartidaB FROM trueque
+  )
+GROUP BY r.Nombre, r.TipoRecurso
+HAVING COUNT(*) >= ALL(
+    SELECT COUNT(*)
+    FROM construccion c2
+    JOIN partida p2 
+        ON c2.IdPartida = p2.IdPartida 
+       AND c2.IdPais = p2.IdPais
+    WHERE p2.FechaCreacion >= SYSDATE - 30
+      AND p2.IdPartida NOT IN(
+            SELECT IdPartidaA FROM trueque
+            UNION
+            SELECT IdPartidaB FROM trueque
+      )
 );
 
 
