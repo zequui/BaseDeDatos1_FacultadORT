@@ -317,34 +317,53 @@ GROUP BY PPJ.alias, PPJ.idpartida, PPJ.idpais, PPJ.rol, J.nombrejugador, u.cantu
 -- del país que utilizó más veces el recurso y el que menos lo utilizó. 
 
 
-SELECT r.idrecurso, r.nombre, COUNT(DISTINCT ir.idpartida) AS partidas_usadas, COUNT(c.tipoconstruccion) AS contrucciones_usadas,
-
-(
-        SELECT pa.nombrepais
-        FROM PAIS pa
-        JOIN PARTIDA p2 ON p2.idpais = pa.idpais
-        JOIN INVENTARIORECURSO ir2 ON ir2.idpartida = p2.idpartida
-        WHERE ir2.idrecurso = r.idrecurso
-        GROUP BY pa.nombrepais
-        ORDER BY COUNT(*) DESC -- ORDENA DESCENDIENTE  
-        FETCH FIRST 1 ROW ONLY -- FUERZA A SOLO MOSTRAR UNA FILA(LA PRIMERA) LINK: https://blogs.oracle.com/sql/how-to-select-the-top-n-rows-per-group-with-sql-in-oracle-database
-    ) AS pais_mas_usos
-    ,
-
-(
-        SELECT pa.nombrepais
-        FROM PAIS pa
-        JOIN PARTIDA p2 ON p2.idpais = pa.idpais
-        JOIN INVENTARIORECURSO ir2 ON ir2.idpartida = p2.idpartida
-        WHERE ir2.idrecurso = r.idrecurso
-        GROUP BY pa.nombrepais
-        ORDER BY COUNT(*) ASC -- ORDENA ASCENDIENTE  
-        FETCH FIRST 1 ROW ONLY 
-    ) AS pais_menos_usos
-
+SELECT r.idrecurso,
+       r.nombre,
+       COUNT(DISTINCT ir.idpartida) AS partidas_usadas,
+       COUNT(c.tipoconstruccion) AS construcciones_usadas,
+       pa_max.nombrepais AS pais_mas_usos,
+       pa_min.nombrepais AS pais_menos_usos
 FROM RECURSO r
-CROSS JOIN INVENTARIORECURSO ir -- USE CROSS JOIN PARA EVALUAR TODOS LOS RECURSOS INCLUSO SI NO SE USAN
-LEFT JOIN PARTIDA p ON p.idpartida = ir.idpartida 
-LEFT JOIN CONSTRUCCION C ON c.idrecurso = r.idrecurso -- USE LEFT JOIN POR SI NO SE USAN RECURSOS EN LA PARTIDA QUE APAREZCAN IGUAL
-WHERE p.fechacreacion >= '29-OCT-2025'
-GROUP BY r.idrecurso, r.nombre;
+CROSS JOIN INVENTARIORECURSO ir
+LEFT JOIN PARTIDA p ON p.idpartida = ir.idpartida
+LEFT JOIN CONSTRUCCION c ON c.idrecurso = r.idrecurso
+LEFT JOIN (
+    SELECT ir2.idrecurso, pa.nombrepais
+    FROM PAIS pa
+    JOIN PARTIDA p2 ON p2.idpais = pa.idpais
+    JOIN INVENTARIORECURSO ir2 ON ir2.idpartida = p2.idpartida
+    GROUP BY ir2.idrecurso, pa.nombrepais
+    HAVING COUNT(*) = (
+        SELECT MAX(cnt)
+        FROM (
+            SELECT COUNT(*) AS cnt
+            FROM PAIS pa3
+            JOIN PARTIDA p3 ON p3.idpais = pa3.idpais
+            JOIN INVENTARIORECURSO ir3 ON ir3.idpartida = p3.idpartida
+            WHERE ir3.idrecurso = ir2.idrecurso
+            GROUP BY pa3.nombrepais
+        )
+    )
+) pa_max ON pa_max.idrecurso = r.idrecurso
+LEFT JOIN (
+   
+    SELECT ir2.idrecurso, pa.nombrepais
+    FROM PAIS pa
+    JOIN PARTIDA p2 ON p2.idpais = pa.idpais
+    JOIN INVENTARIORECURSO ir2 ON ir2.idpartida = p2.idpartida
+    GROUP BY ir2.idrecurso, pa.nombrepais
+    HAVING COUNT(*) = (
+        SELECT MIN(cnt)
+        FROM (
+            SELECT COUNT(*) AS cnt
+            FROM PAIS pa3
+            JOIN PARTIDA p3 ON p3.idpais = pa3.idpais
+            JOIN INVENTARIORECURSO ir3 ON ir3.idpartida = p3.idpartida
+            WHERE ir3.idrecurso = ir2.idrecurso
+            GROUP BY pa3.nombrepais
+        )
+    )
+) pa_min ON pa_min.idrecurso = r.idrecurso
+WHERE p.fechacreacion >= DATE '2025-10-29'
+GROUP BY r.idrecurso, r.nombre, pa_max.nombrepais, pa_min.nombrepais
+ORDER BY r.idrecurso;
