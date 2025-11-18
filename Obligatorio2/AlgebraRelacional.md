@@ -47,3 +47,15 @@ Todos \leftarrow \Pi_{cantRec}\;\big(AliYRec\big) \\
 min \leftarrow \Pi_{cantRec}\;\big(Todos - NoMin\big) \\
 \Pi_{Jugador}\;\big(AliYRec \bowtie min \big)
 $$
+
+
+# Ejercicio 5
+$$
+RecConst \leftarrow \Pi_{idRecurso}\big(\sigma_{TipoRecurso = 'construccion'}(Recurso)​\big) \\
+partiConsumo \leftarrow \Pi_{idPartida}\;\big(\sigma_{configuracionconsumo > 1000}\;(Partida) \big) \\
+ConstConsu \leftarrow \Pi *\;\big( \sigma_{tipoOperacion = 'Consume'}(Construccion) \big) \\
+CtPartidaConsu \leftarrow \Pi *\;\big(ConstConsu \bowtie partiConsumo \big) \\
+ConstRecConsumo \leftarrow \Pi *\;\big( CtPartidaConsu \bowtie RecConst \big) \\
+paisesConsumistas \leftarrow \Pi_{idPais} \big( \big(\Pi_{idPais,idRecurso}\;( ConstRecConsumo)\big)\; \% \;RecConst \big) \\
+\Pi_{Alias,Nombrejugador}\big(Jugador \bowtie (paisesConsumistas \bowtie paispartidajugador)\big) \\
+$$
