@@ -51,11 +51,11 @@ $$
 
 # Ejercicio 5
 $$
-RecConst \leftarrow \Pi_{idRecurso}\big(\sigma_{TipoRecurso = 'construccion'}(Recurso)​\big) \\
-partiConsumo \leftarrow \Pi_{idPartida}\;\big(\sigma_{configuracionconsumo > 1000}\;(Partida) \big) \\
-ConstConsu \leftarrow \Pi *\;\big( \sigma_{tipoOperacion = 'Consume'}(Construccion) \big) \\
-CtPartidaConsu \leftarrow \Pi *\;\big(ConstConsu \bowtie partiConsumo \big) \\
-ConstRecConsumo \leftarrow \Pi *\;\big( CtPartidaConsu \bowtie RecConst \big) \\
-paisesConsumistas \leftarrow \Pi_{idPais} \big( \big(\Pi_{idPais,idRecurso}\;( ConstRecConsumo)\big)\; \% \;RecConst \big) \\
-\Pi_{Alias,Nombrejugador}\big(Jugador \bowtie (paisesConsumistas \bowtie paispartidajugador)\big) \\
+RecConst \leftarrow \Pi_{idRecurso}\big(\sigma_{TipoRecurso = 'CONSTRUCCION'}(Recurso)\big) \\[4pt]
+partiConsumo \leftarrow \Pi_{idPartida,idPais}\big(\sigma_{configuracionconsumo > 1000}(Partida)\big) \\[4pt]
+ConstConsu \leftarrow \sigma_{tipoOperacion = 'CONSUME'}(Construccion) \\[4pt]
+CtPartidaConsu \leftarrow ConstConsu \bowtie partiConsumo \\[4pt]
+ConstRecConsumo \leftarrow \Pi_{idPartida,idPais,idRecurso}\big(CtPartidaConsu \bowtie RecConst\big) \\[4pt]
+paisesConsumistas \leftarrow \Pi_{idPartida,idPais}\Big(\big(\Pi_{idPartida,idPais,idRecurso}(ConstRecConsumo)\big)\; \%\; RecConst\Big) \\[4pt]
+Resultado \leftarrow \Pi_{Alias,NombreJugador}\Big( Jugador \bowtie \big( paisesConsumistas \bowtie_{(idPartida,idPais)} PaisPartidaJugador \big) \Big)
 $$
