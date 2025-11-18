@@ -5,9 +5,9 @@ RecId \leftarrow \Pi_{IdRecurso}\;\big(\sigma_{TipoRecurso ='Construccion'}(Recu
 ConsId \leftarrow \Pi_{IdPais,TipoConstruccion}\;\big(Construccion \bowtie RecID​\big) \\
 PaisId \leftarrow \Pi_{IdPais}\;\big(\sigma_{TipoConstruccion = 'Puerto'}(ConsId)​\big) \\
 PaisId2 \leftarrow \Pi_{IdPais}\;\big(\sigma_{TipoConstruccion = 'Astillero'}(consId)​\big) \\
-Puertos \leftarrow \Pi*(PaisId) - \Pi*(PaisId2) \\
-Astilleros \leftarrow \Pi*(PaisId2) - \Pi*(PaisId) \\
-\Pi*\;\big(Pais \bowtie (Puertos \cup Astilleros)​\big) \\
+Puertos \leftarrow (PaisId) - (PaisId2) \\
+Astilleros \leftarrow (PaisId2) - (PaisId) \\
+\big(Pais \bowtie (Puertos \cup Astilleros)​\big) \\
 $$
 # Ejercicio 2
 $$
@@ -25,9 +25,9 @@ $$
 $$
 Invitados \leftarrow \Pi_{Alias, IdPArtida}\;\big(\sigma_{Rol = 'Invitado'}(PaisPartidaJugador)​\big) \\
 fech3 \leftarrow \Pi_{IdPartida, FechaCreacion, ConfiguracionConsumo}\;\big(\sigma_{FechaCreacion >= (hoy - 90dias)}(Invitados \bowtie Partida)​\big) \\
-PxP \leftarrow \Pi_{ConfiguracionConsumo}\;(Partida) \times \Pi_{ConfiguracionConsumo}\;(\rho_{pa2}(Partida)) \\
-Menores \leftarrow \Pi * (\sigma_{¥1 < ¥2}(PxP)) \\
-NoMax \leftarrow \Pi_{¥1} (Menores) \\
+PxP \leftarrow \Pi_{ConfiguracionConsumo}\;(Partida) \times (ConfiguracionCons)\big(\Pi_{ConfiguracionConsumo}\;(\rho_{pa2}(Partida))\big) \\
+Menores \leftarrow (\sigma_{ConfiguracionConsumo < ConfiguracionCons}(PxP)) \\
+NoMax \leftarrow \Pi_{ConfiguracionConsumo} (Menores) \\
 Max \leftarrow \Pi_{ConfiguracionConsumo}\;(Partida - NoMax) \\
 PartidaFilt \leftarrow \Pi_{IdPartida}\;\big(fech3 \bowtie Max\big) \\ 
 Ali \leftarrow \Pi_{Alias}\;\big(invitados \bowtie PartidaFilt\big) \\ 
@@ -37,15 +37,9 @@ $$
 # Ejercicio 4
 $$
 RecId \leftarrow \Pi_{IdRecurso}\;\big(\sigma_{TipoRecurso = 'hierro'}(Recurso)​\big) \\
-AliasA \leftarrow (Jugador,cantRec)\;\Pi_{JugadorA,CantidadRecursoA}\;\big(IdRecursoA​ \bowtie RecID \big) \\
-AliasB \leftarrow (Jugador,cantRec)\;\Pi_{JugadorB,CantidadRecursoB}\;\big(IdRecursoA​ \bowtie RecID \big) \\
-AliYRec \leftarrow \Pi_{Jugador,cantRec}\;(AliasA) \cup \Pi_{Jugador,cantRec}\;(AliasB) \\
-RecXRec \leftarrow \Pi_{Jugador,cantRec}\;(AliYRec) \times \Pi_{Jugador,cantRec}\;(\rho_{T2}(AliYRec)) \\
-mayores \leftarrow \Pi * \big(\sigma_{¥3 > ¥4}(RecXRec)) \\
-NoMin \leftarrow \Pi_{¥3} \big(mayores) \\
-Todos \leftarrow \Pi_{cantRec}\;\big(AliYRec\big) \\
-min \leftarrow \Pi_{cantRec}\;\big(Todos - NoMin\big) \\
-\Pi_{Jugador}\;\big(AliYRec \bowtie min \big)
+AliasA \leftarrow (Jugador,CantRec)\;\Pi_{JugadorA,CantidadRecursoA}\;\big(Trueque \bowtie_{Trueque.IdRecursoA = RecID.IdRecurso} RecID \big) \\
+MaxCant \leftarrow (\gamma Max(CantRec))(AliasA) \\
+\Pi_{Jugador}\;\big( AliasA \bowtie MaxCant \big)
 $$
 
 
