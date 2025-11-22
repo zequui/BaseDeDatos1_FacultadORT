@@ -233,7 +233,7 @@ INSERT INTO construccion VALUES (20004,111,'VenPlayer',5104,5101,'USINAS','CONSU
 INSERT INTO construccion VALUES (20004,112,'CRPlayer',5104,5102,'PUERTO','CONSUME',7);
 
 -- Verificamos cada caso dependiendo del rol  con y sin construcciones, truques donde solo participa como B , solo A o ambos y por ultimo stock acumulado de los recuros, con y sin recursos.
- 
+
 
 -- EJ10: últimos 15 días
 INSERT INTO construccion VALUES (20001,102,'UruPlayer',5104,6001,'USINAS','CONSUME',7);
@@ -255,6 +255,8 @@ INSERT INTO trueque VALUES (10004,20001,103,'BraPlayer',5101, 20001,104,'ChiPlay
 INSERT INTO trueque VALUES (10005,20001,101,'ArgPlayer',5101, 20001,103,'BraPlayer',5104, 1,  5);
 INSERT INTO trueque VALUES (10006,20001,102,'UruPlayer',5102, 20001,104,'ChiPlayer',5101, 7,  7);
 INSERT INTO trueque VALUES (10007,20006,101,'ArgPlayer',5103, 20006,108,'ParPlayer',5102, 15, 10);
+
+-- para el ejercicio 10 agregamos casos de trueques en los ultimos 15 dias y fuera de ese rango 
 
 -- =============================================================
 -- FIN
