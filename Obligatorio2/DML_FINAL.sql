@@ -177,6 +177,11 @@ INSERT INTO construccion VALUES (20003,109,'BolPlayer',5101,1004,'PUERTO','CONSU
 INSERT INTO construccion VALUES (20003,109,'BolPlayer',5103,1005,'ASTILLERO','CONSUME',5);
 INSERT INTO construccion VALUES (20003,110,'EcuPlayer',6004,1006,'PUERTO','CONSUME',4);
 
+-- mexico y paraguay tienen o puerto o astillero, pero no ambos mientras que brasil tiene ambos
+-- output esperado:
+-- México	107
+-- Paraguay	108
+
 -- EJ5: UN PAIS QUE CONSUME TODOS LOS RECURSOS DE CONSTRUCCION (5101..5106) CUMPLIENDO CONSUMO Y SIN CUMPLIR CONSUMO > 1000
 INSERT INTO construccion VALUES (20001,102,'UruPlayer',5101,2001,'USINAS','CONSUME',20);
 INSERT INTO construccion VALUES (20001,102,'UruPlayer',5102,2002,'USINAS','CONSUME',20);
@@ -194,6 +199,10 @@ INSERT INTO construccion VALUES (20007,111,'VenPlayer',5103,2023,'USINAS','CONSU
 INSERT INTO construccion VALUES (20007,111,'VenPlayer',5104,2024,'USINAS','CONSUME',10);
 INSERT INTO construccion VALUES (20007,111,'VenPlayer',5105,2025,'USINAS','CONSUME',10);
 INSERT INTO construccion VALUES (20007,111,'VenPlayer',5106,2026,'USINAS','CONSUME',10);
+
+-- uruguay cumple consumo > 1000 y aargentina y venezuela no , pero consumen todos los recursos de construccion 
+-- output esperado:
+-- Uruplayer Sofia
 
 -- EJ6: más usado sin trueques (Cemento)
 INSERT INTO construccion VALUES (20002,105,'PerPlayer',5102,3001,'USINAS','CONSUME',25);
@@ -222,6 +231,9 @@ INSERT INTO construccion VALUES (20001,103,'BraPlayer',5101,5022,'PUERTO','CONSU
 INSERT INTO construccion VALUES (20001,104,'ChiPlayer',5102,5031,'USINAS','CONSUME',8);
 INSERT INTO construccion VALUES (20004,111,'VenPlayer',5104,5101,'USINAS','CONSUME',9);
 INSERT INTO construccion VALUES (20004,112,'CRPlayer',5104,5102,'PUERTO','CONSUME',7);
+
+-- Verificamos cada caso dependiendo del rol  con y sin construcciones, truques donde solo participa como B , solo A o ambos y por ultimo stock acumulado de los recuros, con y sin recursos.
+ 
 
 -- EJ10: últimos 15 días
 INSERT INTO construccion VALUES (20001,102,'UruPlayer',5104,6001,'USINAS','CONSUME',7);
