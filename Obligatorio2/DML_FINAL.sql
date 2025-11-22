@@ -232,7 +232,27 @@ INSERT INTO construccion VALUES (20001,104,'ChiPlayer',5102,5031,'USINAS','CONSU
 INSERT INTO construccion VALUES (20004,111,'VenPlayer',5104,5101,'USINAS','CONSUME',9);
 INSERT INTO construccion VALUES (20004,112,'CRPlayer',5104,5102,'PUERTO','CONSUME',7);
 
--- Verificamos cada caso dependiendo del rol  con y sin construcciones, truques donde solo participa como B , solo A o ambos y por ultimo stock acumulado de los recuros, con y sin recursos.
+
+-- 1) PARTIDA (año 2024)
+INSERT INTO partida VALUES (19901, 102, TO_DATE('15/07/2024','DD/MM/YYYY'), 1800); -- Uruguay
+INSERT INTO partida VALUES (19901, 101, TO_DATE('15/07/2024','DD/MM/YYYY'), 1800); -- Argentina
+INSERT INTO partida VALUES (19901, 104, TO_DATE('15/07/2024','DD/MM/YYYY'), 1800); -- Chile
+INSERT INTO paisPartidaJugador VALUES (19901, 102, 'UruPlayer', 'ANFITRION');
+INSERT INTO paisPartidaJugador VALUES (19901, 101, 'ArgPlayer', 'INVITADO');
+INSERT INTO paisPartidaJugador VALUES (19901, 104, 'ChiPlayer', 'SE UNIO');
+INSERT INTO inventarioRecurso VALUES (19901, 102, 'UruPlayer', 5101, 80);
+INSERT INTO inventarioRecurso VALUES (19901, 102, 'UruPlayer', 5102, 60);
+INSERT INTO inventarioRecurso VALUES (19901, 101, 'ArgPlayer', 5102, 50);
+INSERT INTO inventarioRecurso VALUES (19901, 101, 'ArgPlayer', 6001, 30);
+INSERT INTO inventarioRecurso VALUES (19901, 104, 'ChiPlayer', 5101, 40);
+INSERT INTO construccion VALUES (19901, 102, 'UruPlayer', 5102, 91001, 'USINAS',  'CONSUME', 10);
+INSERT INTO construccion VALUES (19901, 102, 'UruPlayer', 5101, 91002, 'PUERTO',  'CONSUME', 5);
+INSERT INTO construccion VALUES (19901, 101, 'ArgPlayer', 5102, 91003, 'USINAS',  'CONSUME', 8);
+INSERT INTO construccion VALUES (19901, 104, 'ChiPlayer', 5101, 91004, 'ASTILLERO','CONSUME', 6);
+INSERT INTO trueque VALUES (191001, 19901, 102, 'UruPlayer', 5101, 19901, 101, 'ArgPlayer', 5102, 3, 4);
+
+
+-- Verificamos cada caso dependiendo del rol y la fecha, con y sin construcciones, truques donde solo participa como B , solo A o ambos y por ultimo stock acumulado de los recuros, con y sin recursos.
 
 
 -- EJ10: últimos 15 días
